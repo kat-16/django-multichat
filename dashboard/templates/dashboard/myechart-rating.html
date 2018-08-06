@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <title>Echart</title>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+      <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+      <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+      <link rel="stylesheet" href="myechart.css">
+   </head>
+   <body>
+     <br/>
+     <div id="main" style="width: 600px; height: 250px"></div>
+     <script type="text/javascript">
+        var chart = echarts.init(document.getElementById("main"));
+        chart.showLoading();
+        $.getJSON('https://kat-16.github.io/jsonwesite/rating.json', function (data) {
+            chart.hideLoading();
+            questions = data['questions'];
+            console.log(questions);
+            //ele='<table border="1"><tr><td>Active Users: '+data.Active_users+'</td><td>Total Votes: '+data.Total_votes+'</td><td>Total Users: '+data.Total_users+'</td></tr>'
+            ele='<div class="a"><center>'+'Active Users: '+ data.Active_users + ' Total Votes: ' + data.Total_votes + ' Total Users: '+ data.Total_users + '</center></div>';
+            //ele ='<div>' + 'Total Users: ' + ['Total users'] + ' Active Users: ' + ['Active users'] + ' Total Votes: ' + ['Total votes'] +'</div'>
+            ele =$("#main").append(ele);
+            for(var i=0; i<questions.length; i++){
+              //if(questions[i]['question_id']==requested_id)                             // added
+            //  {                                                                       //added
+                var title=[];
+                title.push(questions[i]['question']);
+                if(questions[i]['question type']=='rating')
+                {
+                  rate='<h><center>'+questions[i]['question']+'</center></h>'+'<h><center>Average Rating: '+ questions[i]['average rating']+'%</center></h> <center><div class="ratings">'+
+                  '<div class="empty-stars"></div>'+
+                  '<div class="full-stars" style="width:'+ questions[i]['average rating']+'%"></div>'+
+                  '</div></center><br/><div class="a"><center>'+'Active Users: '+ data.Active_users + ' Total Votes: ' + data.Total_votes + ' Total Users: '+ data.Total_users + '</center></div>'
+                  //rate =$("#ele").append(rate);
+                  document.getElementById("main").innerHTML = rate;
+                }
+                else if(question[i]['question type']=='single-choice' || 'multi-choice')
+                {
+                  var data = [];
+                  var labels =[];
+                  var title =[];
+                  for (var j=0; j<questions[i]['options'].length; j++){
+                    labels.push(questions[i]['options'][j]['text']);
+                    data.push({ value: questions[i]['options'][j]['votes'], name: questions[i]['options'][j]['text']});
+                    }
+                    chart.setOption({
+                    title : {
+                        text: title,
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        itemPointer: {
+                                      type: 'shadow'
+                                  },
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        top:'middle',
+                        height: 'adaptive',
+                        itemwidth: '20',
+                        animationDurationUpdate: '800',
+                        data: labels
+                    },
+                    series : [{
+                            name: 'Info',
+                            type: 'pie',
+                            radius : '55%',
+                            center: ['50%', '55%'],
+                            data:data,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                              }
+                            }]
+                      });
+                }
+            //  }                                       //addded
+            }
+            });
+        //  myChart.setOption(option, true);
+       </script>
+   </body>
+</html>
